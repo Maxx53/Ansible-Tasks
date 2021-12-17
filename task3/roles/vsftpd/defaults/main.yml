@@ -1,0 +1,10 @@
+---
+# defaults file for vsftpd
+anonymous_enable: yes
+local_enable: yes
+write_enable: yes
+anon_upload_enable: yes
+
+dirs:
+  - /var/ftp/pub
+  - /var/ftp/pub/upload

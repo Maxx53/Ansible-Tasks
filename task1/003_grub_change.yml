@@ -1,0 +1,21 @@
+---
+- name: grub update
+  hosts: all
+  vars:
+    grub: /etc/default/grub
+  tasks:
+    - name: params change
+      lineinfile:
+        state: present
+        dest: "{{ grub }}"
+        backrefs: yes
+        regexp: '^(GRUB_CMDLINE_LINUX=(?!.*{{ item }})\"[^\"]*)(\".*)'
+        line: '\1 {{ item }}=0\2'
+      loop:
+        - net.ifnames
+        - biosdevname
+      notify: reconf
+
+  handlers:
+    - name: reconf
+      command: grub2-mkconfig

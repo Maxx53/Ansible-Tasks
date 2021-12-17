@@ -1,0 +1,11 @@
+---
+users:
+  - name: alice
+    email: alice_alison1977
+    home: aliceplace
+  - name: bob
+    email: bobcat85
+    home: bobsfiles
+  - name: carol
+    email: carol555
+    home: carolstuff

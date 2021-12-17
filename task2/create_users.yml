@@ -1,0 +1,17 @@
+---
+- name: create users
+  hosts: all
+  vars_files:
+    - users.yml
+    - passwords.yml
+    
+  tasks:
+  - name: create users in loop
+    user:
+      name: "{{ item.name }}"
+      password: "{{ passwords[item.name].password | password_hash('sha512') }}"
+      home: "/home/{{ item.home}}"
+      comment: "{{ item.email }}@example.com"
+      update_password: on_create
+    loop: "{{ users }}"
+    no_log: True

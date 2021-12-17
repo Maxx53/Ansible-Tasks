@@ -1,0 +1,13 @@
+<html>
+<head>
+  <title>Welcome page</title>
+</head>
+<body>
+  <h2>Welcome to my web server!</h2>
+  <p>Node {{ inventory_hostname }} {{ ansible_facts.all_ipv4_addresses }} running on {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}</p>
+  <p>Powered by Python {{ ansible_facts.python_version }}</p>
+  <hr>
+  <p>{{ date }}</p>
+
+</body>
+</html>

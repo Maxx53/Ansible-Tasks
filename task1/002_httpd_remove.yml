@@ -1,0 +1,30 @@
+---
+- name: remove web server
+  hosts: all
+  tasks:
+    - name: remove httpd
+      yum:
+        name: httpd
+        state: absent
+
+    - name: delete index file
+      file:
+        state: absent
+        path: /var/www/html/index.html
+
+    - name: close ports with firewalld
+      firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        state: disabled
+      loop:
+        - 8080/tcp
+        - 80/tcp
+        - 443/tcp
+      notify: reload firewalld
+
+  handlers:
+    - name: reload firewalld
+      service:
+        name: firewalld
+        state: reloaded

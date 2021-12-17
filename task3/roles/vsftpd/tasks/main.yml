@@ -1,0 +1,71 @@
+---
+# tasks file for vsftpd
+- name: install vsftpd
+  yum:
+    name: vsftpd
+    state: latest
+
+- name: start vsftpd
+  service:
+    name: vsftpd
+    state: started
+    enabled: yes
+
+- name: create config
+  template:
+    src: vsftpd.conf.j2
+    dest: /etc/vsftpd/vsftpd.conf
+  notify:
+    - restart vsftpd
+
+- name: install firewalld
+  yum:
+    name: firewalld
+    state: latest
+
+- name: add ports with firewalld
+  firewalld:
+    port: "{{ item }}/tcp"
+    permanent: yes
+    state: enabled
+  loop:
+    - 20
+    - 21
+    - 22
+    - 10090-10100
+  notify: reload firewalld
+
+- name: install SELinux libs
+  yum:
+    name:
+      - python3-libselinux
+      - python3-libsemanage
+      - python3-policycoreutils
+    state: latest
+
+- name: set ftpd_anon_write SElinux property
+  seboolean:
+    name: ftpd_anon_write
+    state: yes
+    persistent: no
+
+- name: create ftp pub folder with permissions
+  file:
+    path: "{{ dirs[0] }}"
+    state: directory
+    mode: 0755
+
+- name: create ftp upload folder with permissions
+  file:
+    path: "{{ dirs[1] }}"
+    state: directory
+    mode: 0777
+
+- name: set SElinux file context
+  sefcontext:
+    target: "{{ item }}"
+    setype: public_content_rw_t
+    state: present
+  loop: "{{ dirs }}"
+  notify:
+    - run restorecon

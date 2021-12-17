@@ -1,0 +1,33 @@
+---
+# tasks file for httpd
+- name: install httpd
+  yum:
+    name: httpd
+    state: latest
+
+- name: create index file
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+
+- name: start httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: install firewalld
+  yum:
+    name: firewalld
+    state: latest
+
+- name: add ports with firewalld
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+  loop:
+    - 8080/tcp
+    - 80/tcp
+    - 443/tcp
+  notify: reload firewalld
